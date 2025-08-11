@@ -1,17 +1,50 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Türkische Runde</title>
-  <link rel="stylesheet" href="styles/style.css">
+  <link rel="stylesheet" href="styles/style.css" />
 </head>
 <body>
   <header>
     <h1>Türkische Runde</h1>
   </header>
   <main>
+    <img src="assets/posters/turkish_poster.jpeg" alt="Türkische Runde Poster" class="game-cover" />
     <p>The Glut must go on 🔥🚬</p>
+    <div id="trTime" style="font-size:36px;font-weight:1000;margin:12px 0">00:02</div>
+    <button id="trStart">Puff Timer starten</button>
   </main>
+
+  <script>
+    const trT = document.getElementById('trTime');
+    let trRAF = null, tr0 = 0, trRun = false;
+
+    function fmt(s){ s = Math.max(0, Math.floor(s)); return '00:'+(s<10?'0':'')+s; }
+    function loop(ts){
+      if(!trRun) return;
+      if(!tr0) tr0 = ts;
+      const s = (ts - tr0)/1000, rem = Math.max(0, 2 - s);
+      trT.textContent = fmt(rem);
+      if(rem <= 0){
+        trRun = false; cancelAnimationFrame(trRAF);
+        try{
+          const ctx = new (window.AudioContext||window.webkitAudioContext)();
+          const o = ctx.createOscillator(), g = ctx.createGain();
+          o.type = 'square'; o.connect(g).connect(ctx.destination);
+          g.gain.value = 0.0001; o.start();
+          g.gain.exponentialRampToValueAtTime(0.7, ctx.currentTime+0.02);
+          g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime+0.22);
+          o.stop(ctx.currentTime+0.23);
+        }catch(e){}
+        return;
+      }
+      trRAF = requestAnimationFrame(loop);
+    }
+    document.getElementById('trStart').onclick = ()=>{
+      trRun=false; cancelAnimationFrame(trRAF); tr0=0; trRun=true; trRAF=requestAnimationFrame(loop);
+    };
+  </script>
 </body>
 </html>
