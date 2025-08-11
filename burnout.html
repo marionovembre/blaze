@@ -1,77 +1,66 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Burnout Countdown</title>
-  <link rel="stylesheet" href="styles/style.css" />
-</head>
-<body>
-  <header>
-    <h1>Burnout Countdown</h1>
-  </header>
+<!doctype html><html lang="de"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Burnout Countdown</title>
+<link rel="stylesheet" href="styles/style.css">
+<style>
+.page{max-width:560px;margin:0 auto;padding:16px}
+.btn{display:block;width:100%;padding:14px 16px;border-radius:14px;border:none;font-weight:900;font-size:16px;cursor:pointer}
+.btn-primary{background:#ffd54f;color:#111}
+.btn-ghost{background:transparent;color:#ffd54f;border:2px solid #ffd54f;margin-top:8px}
+.card{background:#121212;border:1px solid #262626;border-radius:22px;box-shadow:0 20px 60px rgba(0,0,0,.55);padding:18px}
+.stage{position:relative;height:320px;margin:10px 0}
+.joint{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(90deg);width:320px;filter:drop-shadow(0 10px 30px rgba(0,0,0,.55))}
+.penalty{display:none;margin-top:10px;background:#FFF3E0;color:#111;border-radius:18px;padding:14px;font-weight:800}
+.flash{animation:flash .5s ease-in-out 2}
+@keyframes flash{0%{background:transparent}50%{background:rgba(255,0,0,.15)}100%{background:transparent}}
+</style>
+</head><body>
+<div class="page">
+  <a href="index.html" style="color:#9fd5c2;text-decoration:none">← Blaze</a>
+  <h1 style="margin:8px 0 0">Burnout Countdown</h1>
+  <p style="color:#cfcfcf;margin:4px 0 12px">Sag Wörter zur Kategorie & gib den Joint weiter. Er geht aus → Strafe!</p>
 
-  <main>
-    <img src="assets/posters/burnout_poster.jpg" alt="Burnout Poster" class="game-cover" />
-    <p>Der Joint geht irgendwann aus... Sei bereit! 🚬⏳</p>
-    <button id="startBtn">Starten</button>
-    <div id="penaltyArea" style="display:none;"></div>
-  </main>
+  <div class="card">
+    <div class="stage">
+      <!-- Inline-SVG Joint mit „Abbrennen“-Maske -->
+      <svg class="joint" viewBox="0 0 600 160" role="img" aria-label="Joint">
+        <defs>
+          <linearGradient id="paper" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#e8ddc7"/><stop offset="100%" stop-color="#d9c9a9"/>
+          </linearGradient>
+          <linearGradient id="ember" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#ff6a00"/><stop offset="100%" stop-color="#ff0000"/>
+          </linearGradient>
+          <mask id="burnMask"><rect id="burnRect" x="0" y="0" width="0" height="160" fill="#fff"/></mask>
+        </defs>
+        <rect x="20" y="40" width="520" height="80" rx="40" fill="url(#paper)" stroke="#3a2d1c" stroke-width="6"/>
+        <circle cx="40" cy="80" r="26" fill="url(#ember)"/><circle cx="40" cy="80" r="18" fill="#2b2b2b" opacity=".7"/>
+        <path d="M30,56 C50,70 50,90 30,104" fill="#1e1e1e"/>
+        <g mask="url(#burnMask)"><rect x="20" y="40" width="520" height="80" rx="40" fill="#0b0b0b"/></g>
+      </svg>
+    </div>
 
-  <script>
-    const penalties = [
-      "5 Züge oder 5 Liegestütze",
-      "10 Sek. Rauch halten",
-      "Double Puff",
-      "5 Züge oder 20 Sit-ups",
-      "Plank & Puff"
-    ];
+    <button id="btnStart" class="btn btn-primary">Runde starten</button>
+    <button id="btnPenalty" class="btn btn-ghost" style="display:none">🎯 Strafe anzeigen</button>
+    <div id="penaltyBox" class="penalty"></div>
+    <button id="btnNext" class="btn btn-primary" style="display:none">Nächste Runde</button>
+    <p style="text-align:center;color:#cfcfcf;margin-top:8px">Leises Ticken an · Zeit bleibt geheim.</p>
+  </div>
+</div>
 
-    document.getElementById('startBtn').addEventListener('click', () => {
-      document.getElementById('startBtn').style.display = 'none';
-
-      // 20–60 Sekunden zufällig
-      const randomTime = Math.floor(Math.random() * (60000 - 20000 + 1)) + 20000;
-
-      // Leises Ticken (einmalig gestartet – iOS braucht User-Interaktion)
-      try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'triangle';
-        osc.frequency.value = 1000;
-        gain.gain.value = 0.0001;
-        osc.connect(gain).connect(ctx.destination);
-        osc.start();
-        let t = ctx.currentTime;
-        const tick = () => {
-          const now = ctx.currentTime;
-          while (t < now + 0.12) {
-            t += 0.6; // alle 600ms
-            gain.gain.setValueAtTime(0.0001, t);
-            gain.gain.exponentialRampToValueAtTime(0.2, t + 0.01);
-            gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.08);
-          }
-          requestAnimationFrame(tick);
-        };
-        tick();
-        // Stoppen übernimmt der Timeout nach Ablauf
-        setTimeout(() => { try { ctx.close(); } catch(e){} }, randomTime + 1000);
-      } catch(e) {}
-
-      // Alarm + Strafe
-      setTimeout(() => {
-        const penalty = penalties[Math.floor(Math.random() * penalties.length)];
-        const box = document.getElementById('penaltyArea');
-        box.style.display = 'block';
-        box.className = 'penalty-popup';
-        box.innerHTML = `🔥 Strafe: ${penalty}`;
-
-        // Cartoon-Alarm (einfach, kompatibel)
-        const beep = new Audio('https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg');
-        beep.play().catch(()=>{});
-      }, randomTime);
-    });
-  </script>
-</body>
-</html>
+<script>
+const penalties=["Double Puff 🚬🚬","5 Züge oder 20 Sit-ups 💪","5 Züge oder 5 Liegestütze 🤸‍♂️","Plank & Puff 🏋️‍♂️"];
+let audioCtx,tickRAF=null;function ctx(){return audioCtx||(audioCtx=new (window.AudioContext||window.webkitAudioContext)())}
+function startTick(){const c=ctx(),o=c.createOscillator(),g=c.createGain();o.type="triangle";o.frequency.value=1000;g.gain.value=0;o.connect(g).connect(c.destination);o.start();let t=c.currentTime;function s(){const n=c.currentTime;while(t<n+.12){t+=.6;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.22,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+.08)}tickRAF=requestAnimationFrame(s)}s()}
+function stopTick(){if(tickRAF)cancelAnimationFrame(tickRAF),tickRAF=null;try{audioCtx&&audioCtx.close()}catch(e){}audioCtx=null}
+function alarm(){const c=ctx();for(let i=0;i<4;i++){const t=c.currentTime+i*.28,o=c.createOscillator(),g=c.createGain();o.type="sine";o.connect(g).connect(c.destination);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.8,t+.04);g.gain.exponentialRampToValueAtTime(.0001,t+.26);o.frequency.setValueAtTime(550,t);o.frequency.exponentialRampToValueAtTime(1200,t+.14);o.frequency.exponentialRampToValueAtTime(550,t+.28);o.start(t);o.stop(t+.29)}}
+const burnRect=()=>document.getElementById("burnRect");
+let running=false,t0=0,dur=0,raf=null;function loop(ts){if(!running)return;if(!t0)t0=ts;const e=(ts-t0)/1000,p=Math.min(1,e/dur);burnRect().setAttribute("width",String(600*p));if(e>=dur){running=false;cancelAnimationFrame(raf);document.body.classList.add("flash");setTimeout(()=>document.body.classList.remove("flash"),600);stopTick();alarm();document.getElementById("btnPenalty").style.display="block";return}raf=requestAnimationFrame(loop)}
+function startRound(){document.getElementById("btnStart").style.display="none";document.getElementById("btnPenalty").style.display="none";document.getElementById("penaltyBox").style.display="none";document.getElementById("btnNext").style.display="none";burnRect().setAttribute("width","0");dur=20+Math.random()*40;running=true;t0=0;startTick();raf=requestAnimationFrame(loop)}
+function showPenalty(){const p=penalties[Math.floor(Math.random()*penalties.length)],b=document.getElementById("penaltyBox");b.textContent="Strafe: "+p;b.style.display="block";document.getElementById("btnNext").style.display="block"}
+function nextRound(){startRound()}
+document.getElementById("btnStart").onclick=startRound;
+document.getElementById("btnPenalty").onclick=showPenalty;
+document.getElementById("btnNext").onclick=nextRound;
+</script>
+</body></html>
