@@ -1,17 +1,38 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Türkische Runde</title>
-  <link rel="stylesheet" href="styles/style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Brain Fog</title>
+  <link rel="stylesheet" href="styles/style.css" />
 </head>
 <body>
   <header>
-    <h1>Türkische Runde</h1>
+    <h1>Brain Fog</h1>
   </header>
   <main>
-    <p>The Glut must go on 🔥🚬</p>
+    <img src="assets/posters/brainfog_poster.jpeg" alt="Brain Fog Poster" class="game-cover" />
+    <p>Konzentration? Fehlanzeige... Viel Spaß! 🧠💨</p>
+    <button id="newCard">Neue Karte</button>
+    <div id="cardBox" style="margin-top:12px;font-weight:bold;"></div>
   </main>
+  <script>
+    const deck = [
+      "Merkt euch 5 Wörter und wiederholt sie rückwärts.",
+      "Zähle von 30 in Dreierschritten herunter.",
+      "Sag das Alphabet, aber nur jede zweite Letter.",
+      "Zungenbrecher: Fischers Fritz … 2× fehlerfrei.",
+      "Nenne 7 Dinge aus der Küche – ohne nachzudenken.",
+      "Zähle 25 Sekunden im Kopf und sag Stopp.",
+      "Buchstabiere „Ananas“ rückwärts – in 3 Sekunden.",
+      "Sag 5 Städte, alle in unterschiedlichen Ländern.",
+      "Sag 10 Tiernamen, die nicht mit „S“ anfangen.",
+      "Merke dir: 🌿🍕🎧🕹️🕯️ – wiederhole sie."
+    ];
+    document.getElementById('newCard').onclick = () => {
+      const i = Math.floor(Math.random() * deck.length);
+      document.getElementById('cardBox').textContent = deck[i];
+    };
+  </script>
 </body>
 </html>
