@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Burnout Countdown</title>
-  <link rel="stylesheet" href="styles/style.css">
+  <link rel="stylesheet" href="styles/style.css" />
 </head>
 <body>
   <header>
@@ -12,9 +12,9 @@
   </header>
 
   <main>
+    <img src="assets/posters/burnout_poster.jpg" alt="Burnout Poster" class="game-cover" />
     <p>Der Joint geht irgendwann aus... Sei bereit! 🚬⏳</p>
     <button id="startBtn">Starten</button>
-    <div id="animationArea"></div>
     <div id="penaltyArea" style="display:none;"></div>
   </main>
 
@@ -29,13 +29,47 @@
 
     document.getElementById('startBtn').addEventListener('click', () => {
       document.getElementById('startBtn').style.display = 'none';
+
+      // 20–60 Sekunden zufällig
       const randomTime = Math.floor(Math.random() * (60000 - 20000 + 1)) + 20000;
+
+      // Leises Ticken (einmalig gestartet – iOS braucht User-Interaktion)
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.value = 1000;
+        gain.gain.value = 0.0001;
+        osc.connect(gain).connect(ctx.destination);
+        osc.start();
+        let t = ctx.currentTime;
+        const tick = () => {
+          const now = ctx.currentTime;
+          while (t < now + 0.12) {
+            t += 0.6; // alle 600ms
+            gain.gain.setValueAtTime(0.0001, t);
+            gain.gain.exponentialRampToValueAtTime(0.2, t + 0.01);
+            gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.08);
+          }
+          requestAnimationFrame(tick);
+        };
+        tick();
+        // Stoppen übernimmt der Timeout nach Ablauf
+        setTimeout(() => { try { ctx.close(); } catch(e){} }, randomTime + 1000);
+      } catch(e) {}
+
+      // Alarm + Strafe
       setTimeout(() => {
-        document.getElementById('penaltyArea').style.display = 'block';
-        const randomPenalty = penalties[Math.floor(Math.random() * penalties.length)];
-        document.getElementById('penaltyArea').innerHTML = `<h2>🔥 Strafe: ${randomPenalty}</h2>`;
-        const alarm = new Audio('https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg');
-        alarm.play();
+        const penalty = penalties[Math.floor(Math.random() * penalties.length)];
+        const box = document.getElementById('penaltyArea');
+        box.style.display = 'block';
+        box.className = 'penalty-popup';
+        box.innerHTML = `🔥 Strafe: ${penalty}`;
+
+        // Cartoon-Alarm (einfach, kompatibel)
+        const beep = new Audio('https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg');
+        beep.play().catch(()=>{});
       }, randomTime);
     });
   </script>
