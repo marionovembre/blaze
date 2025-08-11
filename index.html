@@ -1,18 +1,37 @@
-<main class="game-slider">
+<!-- Force horizontal swipe like Splash -->
+<style>
+  .game-slider{
+    display:flex !important;
+    flex-wrap:nowrap !important;
+    gap:14px !important;
+    overflow-x:auto !important;
+    overflow-y:hidden !important;
+    scroll-snap-type:x mandatory !important;
+    -webkit-overflow-scrolling:touch !important;
+    padding:14px 16px 36px !important;
+  }
+  .game-slider::-webkit-scrollbar{ display:none !important; }
 
-  <div class="game-card" onclick="window.location.href='burnout.html'">
-    <img src="assets/posters/burnout_poster.jpg" alt="Burnout Countdown">
-    <h2>Burnout Countdown</h2>
-  </div>
+  .game-card{
+    scroll-snap-align:center !important;
+    min-width:88% !important;
+    max-width:88% !important;
+    background:#141414 !important;
+    border:1px solid #262626 !important;
+    border-radius:22px !important;
+    box-shadow:0 12px 30px rgba(0,0,0,.4) !important;
+    cursor:pointer !important;
+  }
 
-  <div class="game-card" onclick="window.location.href='brainfog.html'">
-    <img src="assets/posters/brainfog_poster.jpeg" alt="Brain Fog">
-    <h2>Brain Fog</h2>
-  </div>
+  .game-card img{
+    display:block !important;
+    width:100% !important;
+    height:420px !important;
+    object-fit:cover !important;
+    border-top-left-radius:22px !important;
+    border-top-right-radius:22px !important;
+  }
 
-  <div class="game-card" onclick="window.location.href='turkish.html'">
-    <img src="assets/posters/turkish_poster.jpeg" alt="Türkische Runde">
-    <h2>Türkische Runde</h2>
-  </div>
-
-</main>
+  .game-card h2{ font-size:22px !important; font-weight:900 !important; margin:12px 14px 14px !important; }
+  main{ display:block !important; } /* falls ein globales CSS main als flex/column setzt */
+</style>
