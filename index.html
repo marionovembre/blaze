@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Blaze</title>
+<meta name="theme-color" content="#0B0B0B" />
+<style>
+:root{--bg:#0b0b0b;--tile:#141414;--muted:#cfcfcf;--accent:#ffd54f;--ink:#111}
+*{box-sizing:border-box}
+html,body{margin:0;background:#0b0b0b;color:#fff;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+a{color:#9fd5c2;text-decoration:none}
+h1,h2,h3{margin:0}
+.view{display:none;min-height:100dvh}
+.view.active{display:block}
+.header{padding:18px 16px 6px;font-weight:900;font-size:28px}
+.sub{padding:0 16px 12px;color:#cfcfcf}
+
+/* Carousel */
+.carousel{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding:14px 16px 36px}
+.carousel::-webkit-scrollbar{display:none}
+.card{scroll-snap-align:center;background:var(--tile);border:1px solid #262626;border-radius:22px;overflow:hidden;min-width:88%;max-width:88%;box-shadow:0 12px 30px rgba(0,0,0,.40)}
+.poster{width:100%;height:420px;display:block;cursor:pointer;object-fit:cover}
+.meta{padding:14px 16px}
+.title{font-weight:900;font-size:26px;line-height:1.1;margin-bottom:6px}
+.badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.badge{background:#232323;color:#eee;border-radius:999px;padding:6px 10px;font-size:12px}
+
+/* Content boxes */
+.section{padding:0 16px 60px}
+.cardbox{background:#121212;border:1px solid #262626;border-radius:22px;padding:18px;box-shadow:0 20px 60px rgba(0,0,0,.55);max-width:560px;margin:16px auto}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#161616;border:1px solid #2a2a2a;border-radius:14px;padding:12px 14px;margin-top:8px}
+.input{width:100%;padding:12px;border-radius:12px;border:1px solid #343434;background:#141414;color:#fff}
+.btn{display:block;width:100%;padding:14px 16px;border-radius:14px;border:none;font-weight:900;font-size:16px;cursor:pointer}
+.btn-primary{background:var(--accent);color:var(--ink)}
+.btn-ghost{background:transparent;color:var(--accent);border:2px solid var(--accent)}
+.small{font-size:12px;color:#cfcfcf}
+
+/* Countdown UI */
+.wrap{display:flex;align-items:center;justify-content:center;padding:18px}
+.stage{position:relative;height:340px;margin:8px 0}
+.jointSvg{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(90deg);width:320px;height:auto;filter:drop-shadow(0 10px 30px rgba(0,0,0,.55))}
+.flash{animation:flash .5s ease-in-out 2}
+@keyframes flash{0%{background:transparent}50%{background:rgba(255,0,0,.15)}100%{background:transparent}}
+.penalty{display:none;margin-top:10px;background:#FFF3E0;color:#111;border-radius:18px;padding:14px;font-weight:800;line-height:1.3;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.back{display:inline-block;margin-bottom:10px}
+
+/* Press feedback */
+.card:active .poster{transform:scale(.985)}
+/* Simple poster placeholders (falls du noch keine Bilder einbindest) */
+.poster--grad{background:linear-gradient(160deg,#0f3a2a,#0c2328)}
+.poster--grad.blue{background:linear-gradient(160deg,#09223d,#112e52)}
+.poster--grad.red{background:linear-gradient(160deg,#4a0e0e,#5b1b1b)}
+.poster--inside{display:flex;align-items:flex-end;justify-content:flex-start;height:100%;padding:18px}
+.poster--title{font-size:38px;font-weight:1000;line-height:0.95;letter-spacing:.5px}
+</style>
+</head>
+<body>
+
+<!-- ===== HOME (Splash-Style) ===== -->
+<section id="home" class="view active">
+  <div class="header">🔥 Blaze</div>
+  <div class="sub">Wisch durch die Karten & tippe auf ein Spiel.</div>
+
+  <div class="carousel">
+
+    <!-- Burnout Countdown -->
+    <article class="card">
+      <!-- Wenn du echte Cover-Bilder hast, ersetze den div.poster durch <img class="poster" src="dein-bild.jpg"> -->
+      <div class="poster poster--grad">
+        <div class="poster--inside"><div class="poster--title">BURNOUT<br/>COUNTDOWN</div></div>
+      </div>
+      <script>
+        // Poster-Klick navigiert
+        document.currentScript.previousElementSibling.onclick=()=>route('setup');
+      </script>
+      <div class="meta">
+        <div class="title">Burnout Countdown</div>
+        <div class="badges">
+          <span class="badge">2–8 Spieler</span>
+          <span class="badge">20–60 s</span>
+          <span class="badge">Strafen</span>
+        </div>
+      </div>
+    </article>
+
+    <!-- Brain Fog -->
+    <article class="card">
+      <div class="poster poster--grad blue">
+        <div class="poster--inside"><div class="poster--title">BRAIN<br/>FOG</div></div>
+      </div>
+      <script>document.currentScript.previousElementSibling.onclick=()=>route('brainfog');</script>
+      <div class="meta">
+        <div class="title">Brain Fog</div>
+        <div class="badges">
+          <span class="badge">2–8 Spieler</span>
+          <span class="badge">Karten</span>
+        </div>
+      </div>
+    </article>
+
+    <!-- Türkische Runde -->
+    <article class="card">
+      <div class="poster poster--grad red">
+        <div class="poster--inside"><div class="poster--title">TÜRKISCHE<br/>RUNDE</div></div>
+      </div>
+      <script>document.currentScript.previousElementSibling.onclick=()=>route('turkish');</script>
+      <div class="meta">
+        <div class="title">Türkische Runde</div>
+        <div class="badges">
+          <span class="badge">The Glut Must Go On</span>
+          <span class="badge">2–8 Spieler</span>
+        </div>
+      </div>
+    </article>
+
+    <!-- Puff Ladder -->
+    <article class="card">
+      <div class="poster poster--grad blue">
+        <div class="poster--inside"><div class="poster--title">PUFF<br/>LADDER</div></div>
+      </div>
+      <script>document.currentScript.previousElementSibling.onclick=()=>route('ladder');</script>
+      <div class="meta">
+        <div class="title">Puff Ladder</div>
+        <div class="badges">
+          <span class="badge">+1 Zug/Runde</span>
+          <span class="badge">Wer gibt auf?</span>
+        </div>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<!-- ===== BURNOUT: SETUP ===== -->
+<section id="setup" class="view">
+  <div class="section">
+    <div class="cardbox">
+      <a class="back" href="#home">← Blaze</a>
+      <h3 style="margin:2px 0 8px;font-size:22px">Burnout Countdown</h3>
+
+      <div class="row"><div>Spieler (2–8)</div><div id="plCount" class="small">4</div></div>
+      <div id="plList"></div>
+      <button class="btn btn-ghost" id="addPlayer">+ Spieler hinzufügen</button>
+
+      <div class="row" style="margin-top:12px"><div>Kategorie</div><div id="catLabel" class="small">Allgemeinwissen</div></div>
+      <div id="catGrid"></div>
+
+      <button class="btn btn-primary" id="startGame" style="margin-top:14px">Spiel starten</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== BURNOUT: COUNTDOWN ===== -->
+<section id="countdown" class="view">
+  <div class="wrap">
+    <div class="cardbox" style="width:min(560px,92vw)">
+      <a class="back" href="#setup">← Setup</a>
+      <h2 style="text-align:center;margin:0 0 6px">Burnout Countdown</h2>
+      <div class="small" style="text-align:center;margin-bottom:6px">Thema: <b id="ccat">–</b> · Spieler: <b id="cnum">–</b></div>
+
+      <div class="stage">
+        <!-- Inline-SVG Joint (mask animiert „Abrennen“) -->
+        <svg class="jointSvg" viewBox="0 0 600 160" role="img" aria-label="Joint">
+          <defs>
+            <linearGradient id="paper" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#e8ddc7"/>
+              <stop offset="100%" stop-color="#d9c9a9"/>
+            </linearGradient>
+            <linearGradient id="ember" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#ff6a00"/>
+              <stop offset="100%" stop-color="#ff0000"/>
+            </linearGradient>
+            <mask id="burnMask">
+              <!-- Rechteck, das von links nach rechts wächst und den Joint „verkürzt“ -->
+              <rect id="burnRect" x="0" y="0" width="0" height="160" fill="#fff"></rect>
+            </mask>
+          </defs>
+
+          <!-- Papier -->
+          <rect x="20" y="40" width="520" height="80" rx="40" fill="url(#paper)" stroke="#3a2d1c" stroke-width="6" />
+          <!-- Glut -->
+          <circle cx="40" cy="80" r="26" fill="url(#ember)" />
+          <circle cx="40" cy="80" r="18" fill="#2b2b2b" opacity=".7"/>
+          <!-- Asche -->
+          <path d="M30,56 C50,70 50,90 30,104" fill="#1e1e1e"/>
+
+          <!-- Burn-Maske deckt von links ab -->
+          <g mask="url(#burnMask)">
+            <rect x="20" y="40" width="520" height="80" rx="40" fill="#0b0b0b"/>
+          </g>
+        </svg>
+      </div>
+
+      <button id="btnStart" class="btn btn-primary">Runde starten</button>
+      <button id="btnPenalty" class="btn btn-ghost" style="display:none">🎯 Strafe anzeigen</button>
+      <div id="penaltyBox" class="penalty"></div>
+      <button id="btnNext" class="btn btn-primary" style="display:none">Nächste Runde</button>
+      <div class="small" style="text-align:center;margin-top:6px;opacity:.8">Leises Ticken aktiv, Zeit wird nicht angezeigt.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== BRAIN FOG ===== -->
+<section id="brainfog" class="view">
+  <div class="section">
+    <div class="cardbox">
+      <a class="back" href="#home">← Spiele</a>
+      <h3 style="margin:2px 0 10px;font-size:22px">Brain Fog</h3>
+      <div class="small">Zieh eine Karte & führ die Challenge aus.</div>
+      <div id="bfCard" style="font-size:22px;font-weight:900;line-height:1.35;margin:16px 0">Tippe auf „Neue Karte“</div>
+      <button class="btn btn-primary" id="bfNext">Neue Karte</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TÜRKISCHE RUNDE ===== -->
+<section id="turkish" class="view">
+  <div class="section">
+    <div class="cardbox">
+      <a class="back" href="#home">← Spiele</a>
+      <h3 style="margin:2px 0 10px;font-size:22px">Türkische Runde</h3>
+      <div class="small">Regel: <b>ein Zug</b>, sofort weitergeben. Wer hustet, trödelt (>2 s) oder die Glut killt → Strafe.</div>
+      <div id="trTime" style="font-size:36px;font-weight:1000;margin:12px 0">00:02</div>
+      <button class="btn btn-primary" id="trStart">Puff Timer starten</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PUFF LADDER (MVP) ===== -->
+<section id="ladder" class="view">
+  <div class="section">
+    <div class="cardbox">
+      <a class="back" href="#home">← Spiele</a>
+      <h3 style="margin:2px 0 10px;font-size:22px">Puff Ladder</h3>
+      <div class="small">Runde 1: 1 Zug. Dann 2, 3, … Wer aufgibt, scheidet aus. Ultimativer Zug-Test.</div>
+      <div style="font-size:22px;font-weight:900;margin:8px 0">Runde <span id="ldRound">1</span> – Züge: <span id="ldPuffs">1</span></div>
+      <div id="ldList"></div>
+      <button class="btn btn-primary" id="ldNext">Nächste Runde (+1 Zug)</button>
+    </div>
+  </div>
+</section>
+
+<script>
+/* ---------- Mini Router (Hash) => verhindert 404 ---------- */
+const views = ['home','setup','countdown','brainfog','turkish','ladder'];
+function route(id){
+  location.hash = '#'+id;
+}
+function applyRoute(){
+  const id = (location.hash||'#home').slice(1);
+  views.forEach(v=>document.getElementById(v).classList.toggle('active', v===id));
+}
+window.addEventListener('hashchange', applyRoute);
+applyRoute();
+
+/* ---------- Setup-State ---------- */
+let players = ['Spieler 1','Spieler 2','Spieler 3','Spieler 4'];
+let category = 'Allgemeinwissen';
+const categories = [
+  'Allgemeinwissen','Alltag & Dinge','Chaos & Party','Spicy & Persönlich',
+  'Serien & Filme','Snacks & Essen','Musik & Rap','Gaming','Städte & Länder'
+];
+
+const $ = sel => document.querySelector(sel);
+
+function renderPlayers(){
+  $('#plList').innerHTML = '';
+  players.forEach((name,i)=>{
+    const row = document.createElement('div');
+    row.className='row';
+    const left = document.createElement('div'); left.textContent = name;
+    const right = document.createElement('div');
+    const input = document.createElement('input'); input.className='input'; input.style.width='180px'; input.value=name;
+    input.onchange = ()=>{ players[i] = input.value || ('Spieler '+(i+1)); syncSetup(); renderPlayers(); };
+    const del = document.createElement('a'); del.href='#'; del.textContent='entfernen'; del.style.marginLeft='8px';
+    del.onclick=(e)=>{ e.preventDefault(); if(players.length>2){ players.splice(i,1); syncSetup(); renderPlayers(); }};
+    right.appendChild(input); right.appendChild(del);
+    row.appendChild(left); row.appendChild(right);
+    $('#plList').appendChild(row);
+  });
+}
+function renderCats(){
+  const grid = document.createElement('div');
+  categories.forEach(c=>{
+    const r=document.createElement('div');
+    r.className='row'; r.textContent=c;
+    r.onclick=()=>{ category=c; syncSetup(); };
+    grid.appendChild(r);
+  });
+  const old = $('#catGrid'); old.innerHTML=''; old.appendChild(grid);
+}
+function syncSetup(){
+  $('#plCount').textContent = players.length;
+  $('#catLabel').textContent = category;
+}
+$('#addPlayer').onclick = ()=>{ if(players.length<8){ players.push('Spieler '+(players.length+1)); renderPlayers(); syncSetup(); } };
+$('#startGame').onclick = ()=>{
+  $('#ccat').textContent = category;
+  $('#cnum').textContent = players.length;
+  route('countdown');
+};
+renderPlayers(); renderCats(); syncSetup();
+
+/* ---------- Burnout Countdown (hidden timer, random 20–60s) ---------- */
+const penalties = [
+  'Double Puff 🚬🚬',
+  '5 Züge oder 20 Sit-ups 💪',
+  '5 Züge oder 5 Liegestütze 🤸‍♂️',
+  'Plank & Puff 🏋️‍♂️'
+];
+
+let audioCtx, tickRAF = null;
+function ensureAudio(){ if(!audioCtx){ audioCtx = new (window.AudioContext||window.webkitAudioContext)(); } return audioCtx; }
+function startTick(){
+  const ctx = ensureAudio();
+  const osc = ctx.createOscillator(), gain = ctx.createGain();
+  osc.type='triangle'; osc.frequency.value=1000; gain.gain.value=0;
+  osc.connect(gain).connect(ctx.destination); osc.start();
+  let t = ctx.currentTime;
+  function sched(){
+    const now = ctx.currentTime;
+    while(t < now + 0.12){
+      t += 0.6; /* alle 600ms */
+      gain.gain.setValueAtTime(0.0001, t);
+      gain.gain.exponentialRampToValueAtTime(0.22, t+0.01);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t+0.08);
+    }
+    tickRAF = requestAnimationFrame(sched);
+  }
+  sched();
+}
+function stopTick(){ if(tickRAF) cancelAnimationFrame(tickRAF), tickRAF=null; try{ audioCtx && audioCtx.close(); }catch(e){} audioCtx=null; }
+
+function cartoonAlarm(){
+  const ctx = ensureAudio();
+  for(let i=0;i<4;i++){
+    const t = ctx.currentTime + i*0.28;
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type='sine'; o.connect(g).connect(ctx.destination);
+    g.gain.setValueAtTime(0.0001,t);
+    g.gain.exponentialRampToValueAtTime(0.8,t+0.04);
+    g.gain.exponentialRampToValueAtTime(0.0001,t+0.26);
+    o.frequency.setValueAtTime(550,t);
+    o.frequency.exponentialRampToValueAtTime(1200,t+0.14);
+    o.frequency.exponentialRampToValueAtTime(550,t+0.28);
+    o.start(t); o.stop(t+0.29);
+  }
+}
+
+function rand2060(){ return 20 + Math.random()*40; } // 20..60 (float, natürlicher)
+
+let running=false, t0=0, dur=0, raf=null;
+const burnRect = ()=>document.getElementById('burnRect');
+function loop(ts){
+  if(!running) return;
+  if(!t0) t0 = ts;
+  const elapsed = (ts - t0)/1000;
+  const pct = Math.min(1, elapsed/dur);
+  // Breite der Maske wächst von 0 -> volle Breite (600)
+  burnRect().setAttribute('width', String(600 * pct));
+  if(elapsed >= dur){
+    running=false; cancelAnimationFrame(raf);
+    document.body.classList.add('flash'); setTimeout(()=>document.body.classList.remove('flash'), 600);
+    stopTick(); cartoonAlarm();
+    document.getElementById('btnPenalty').style.display='block';
+    return;
+  }
+  raf = requestAnimationFrame(loop);
+}
+function startRound(){
+  // Reset UI
+  document.getElementById('btnStart').style.display='none';
+  document.getElementById('btnPenalty').style.display='none';
+  document.getElementById('penaltyBox').style.display='none';
+  document.getElementById('btnNext').style.display='none';
+  burnRect().setAttribute('width','0');
+
+  // Random Dauer & Audio starten (Tap-gestützt → iOS erlaubt Audio)
+  dur = rand2060();
+  running = true; t0 = 0;
+  startTick();
+  raf = requestAnimationFrame(loop);
+}
+function showPenalty(){
+  const p = penalties[Math.floor(Math.random()*penalties.length)];
+  const box = document.getElementById('penaltyBox');
+  box.textContent = 'Strafe: ' + p;
+  box.style.display = 'block';
+  document.getElementById('btnNext').style.display='block';
+}
+function nextRound(){ startRound(); }
+
+document.getElementById('btnStart').onclick = startRound;
+document.getElementById('btnPenalty').onclick = showPenalty;
+document.getElementById('btnNext').onclick = nextRound;
+
+/* ---------- Brain Fog ---------- */
+const bfDeck = [
+  "Merkt euch 5 Wörter und wiederholt sie rückwärts.",
+  "Zähle von 30 in Dreierschritten herunter.",
+  "Sag das Alphabet, aber nur jede zweite Letter.",
+  "Zungenbrecher: Fischers Fritz … 2× fehlerfrei.",
+  "Nenne 7 Dinge aus der Küche – ohne nachzudenken.",
+  "Zähle 25 Sekunden im Kopf und sag Stopp.",
+  "Buchstabiere „Ananas“ rückwärts – in 3 Sekunden.",
+  "Sag 5 Städte, alle in unterschiedlichen Ländern.",
+  "Sag 10 Tiernamen, die nicht mit „S“ anfangen.",
+  "Merke dir: 🌿🍕🎧🕹️🕯️ – wiederhole sie."
+];
+document.getElementById('bfNext').onclick = ()=>{
+  const i = Math.floor(Math.random()*bfDeck.length);
+  document.getElementById('bfCard').textContent = bfDeck[i];
+};
+
+/* ---------- Türkische Runde ---------- */
+const trT = document.getElementById('trTime');
+let trRAF=null, tr0=0, trRun=false;
+function trFmt(s){ s=Math.max(0, Math.floor(s)); return '00:'+(s<10?'0':'')+s; }
+function trLoop(ts){
+  if(!trRun) return;
+  if(!tr0) tr0 = ts;
+  const s = (ts-tr0)/1000;
+  const rem = Math.max(0, 2-s);
+  trT.textContent = trFmt(rem);
+  if(rem<=0){
+    trRun=false; cancelAnimationFrame(trRAF);
+    // kurzer Piepton
+    try{
+      const ctx=new (window.AudioContext||window.webkitAudioContext)();
+      const o=ctx.createOscillator(), g=ctx.createGain();
+      o.type='square'; o.connect(g).connect(ctx.destination);
+      g.gain.value=0.0001; o.start();
+      g.gain.exponentialRampToValueAtTime(0.7, ctx.currentTime+0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime+0.22);
+      o.stop(ctx.currentTime+0.23);
+    }catch(e){}
+    return;
+  }
+  trRAF = requestAnimationFrame(trLoop);
+}
+document.getElementById('trStart').onclick = ()=>{
+  trRun=false; cancelAnimationFrame(trRAF); tr0=0; trRun=true; trRAF=requestAnimationFrame(trLoop);
+};
+
+/* ---------- Puff Ladder (MVP) ---------- */
+let ldRound=1, ldPuffs=1, ldNames=['Spieler 1','Spieler 2','Spieler 3','Spieler 4'];
+function renderLadder(){
+  document.getElementById('ldRound').textContent=ldRound;
+  document.getElementById('ldPuffs').textContent=ldPuffs;
+  const list=document.getElementById('ldList'); list.innerHTML='';
+  ldNames.forEach(n=>{
+    const row=document.createElement('div'); row.className='row';
+    row.innerHTML=`<div>${n}</div><div>${ldPuffs} Züge</div>`;
+    list.appendChild(row);
+  });
+}
+document.getElementById('ldNext').onclick=()=>{ ldRound++; ldPuffs++; renderLadder(); };
+renderLadder();
+
+/* ---------- Hash-Links initialisieren ---------- */
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click', (e)=>{ const id=a.getAttribute('href').slice(1); route(id); });
+});
+</script>
+
+</body>
+</html>
