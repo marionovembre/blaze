@@ -1,12 +1,13 @@
-/* Layout */
+/* Blaze v3 – clean & horizontal */
 html,body{margin:0;background:#0b0b0b;color:#fff;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
 header{padding:18px 16px 6px}
 h1{margin:0;font-size:28px}
 p{margin:0;color:#cfcfcf}
 
-/* === HORIZONTALER SLIDER === */
+/* Horizontaler Slider wie Splash */
 .game-slider{
   display:flex;
+  flex-wrap:nowrap;
   gap:14px;
   overflow-x:auto;
   overflow-y:hidden;
@@ -16,7 +17,7 @@ p{margin:0;color:#cfcfcf}
 }
 .game-slider::-webkit-scrollbar{display:none}
 
-/* Karten */
+/* Cards */
 .game-card{
   position:relative;
   scroll-snap-align:center;
@@ -30,7 +31,6 @@ p{margin:0;color:#cfcfcf}
   user-select:none;
 }
 .game-card:active{transform:scale(.985)}
-
 .game-card img{
   display:block;
   width:100%;
@@ -39,9 +39,4 @@ p{margin:0;color:#cfcfcf}
   border-top-left-radius:22px;
   border-top-right-radius:22px;
 }
-
-.game-card h2{
-  font-size:22px;
-  font-weight:900;
-  margin:12px 14px 14px;
-}
+.game-card h2{font-size:22px;font-weight:900;margin:12px 14px 14px}
