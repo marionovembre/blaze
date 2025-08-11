@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Burnout Countdown</title>
+  <link rel="stylesheet" href="styles/style.css">
+</head>
+<body>
+  <header>
+    <h1>Burnout Countdown</h1>
+  </header>
+
+  <main>
+    <p>Der Joint geht irgendwann aus... Sei bereit! 🚬⏳</p>
+    <button id="startBtn">Starten</button>
+    <div id="animationArea"></div>
+    <div id="penaltyArea" style="display:none;"></div>
+  </main>
+
+  <script>
+    const penalties = [
+      "5 Züge oder 5 Liegestütze",
+      "10 Sek. Rauch halten",
+      "Double Puff",
+      "5 Züge oder 20 Sit-ups",
+      "Plank & Puff"
+    ];
+
+    document.getElementById('startBtn').addEventListener('click', () => {
+      document.getElementById('startBtn').style.display = 'none';
+      const randomTime = Math.floor(Math.random() * (60000 - 20000 + 1)) + 20000;
+      setTimeout(() => {
+        document.getElementById('penaltyArea').style.display = 'block';
+        const randomPenalty = penalties[Math.floor(Math.random() * penalties.length)];
+        document.getElementById('penaltyArea').innerHTML = `<h2>🔥 Strafe: ${randomPenalty}</h2>`;
+        const alarm = new Audio('https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg');
+        alarm.play();
+      }, randomTime);
+    });
+  </script>
+</body>
+</html>
